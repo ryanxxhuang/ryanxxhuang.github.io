@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMIS.ai — AI 工程現場管理平台|標單匯入、白板 AI 日誌、估驗計價自動算</title>
+<meta name="description" content="台灣公共工程施工廠商的 AI 工地管理系統:PCCES 標單直接匯入,施工日誌拍白板自動填,估驗計價、S 曲線、契約期限一套搞定。">
+<meta property="og:title" content="PMIS.ai — AI 工程現場管理平台">
+<meta property="og:description" content="匯入標單,工地管理自動就位。施工日誌拍白板 AI 自動填,估驗計價一鍵算好。">
+<meta property="og:image" content="assets/dashboard.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1e5a85; --blue-dark: #17486b; --blue-tint: #e8f0f7;
+    --orange: #e8630c; --orange-text: #c8540a; --orange-tint: #fdeadd;
+    --text: #1f2937; --text-2: #4b5563; --text-3: #9ca3af;
+    --surface: #ffffff; --surface-2: #f5f7fa; --border: #e5e7eb;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Noto Sans TC", system-ui, -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif; color: var(--text); background: var(--surface); line-height: 1.7; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--blue); text-decoration: none; }
+
+  /* header */
+  header { position: sticky; top: 0; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); z-index: 10; }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .logo { font-size: 22px; font-weight: 900; letter-spacing: .5px; color: var(--blue); }
+  .logo span { color: var(--orange); }
+  .nav-links { display: flex; gap: 20px; align-items: center; font-size: 14px; }
+  .nav-links a { color: var(--text-2); }
+  .nav-links a:hover { color: var(--blue); }
+
+  /* buttons */
+  .btn { display: inline-block; padding: 12px 28px; border-radius: 10px; font-weight: 700; font-size: 16px; transition: .15s; }
+  .btn-primary { background: var(--orange); color: #fff; box-shadow: 0 4px 14px rgba(232,99,12,.35); }
+  .btn-primary:hover { background: var(--orange-text); transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface); color: var(--blue); border: 1.5px solid var(--blue); }
+  .btn-secondary:hover { background: var(--blue-tint); }
+  .btn-sm { padding: 8px 18px; font-size: 14px; border-radius: 8px; }
+
+  /* hero */
+  .hero { background: linear-gradient(180deg, var(--blue-tint) 0%, #fff 78%); padding: 76px 0 56px; text-align: center; }
+  .hero .tag { display: inline-block; background: var(--orange-tint); color: var(--orange-text); font-size: 13px; font-weight: 700; padding: 4px 14px; border-radius: 999px; margin-bottom: 20px; }
+  .hero h1 { font-size: clamp(30px, 5.4vw, 52px); font-weight: 900; line-height: 1.28; letter-spacing: 1px; }
+  .hero h1 em { font-style: normal; color: var(--blue); }
+  .hero p.sub { font-size: clamp(15px, 2.2vw, 19px); color: var(--text-2); max-width: 620px; margin: 20px auto 34px; }
+  .hero .ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .hero .hint { font-size: 13px; color: var(--text-3); margin-top: 14px; }
+  .hero-shot { max-width: 920px; margin: 48px auto -10px; padding: 0 24px; }
+  .hero-shot img { width: 100%; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 24px 60px rgba(30,90,133,.18); display: block; }
+
+  /* features */
+  section.features { padding: 84px 0 40px; }
+  .sec-head { text-align: center; margin-bottom: 20px; }
+  .sec-head .kicker { color: var(--orange-text); font-weight: 700; font-size: 14px; letter-spacing: 2px; }
+  .sec-head h2 { font-size: clamp(24px, 3.6vw, 34px); font-weight: 900; margin-top: 6px; }
+  .feature { display: flex; align-items: center; gap: 48px; padding: 44px 0; }
+  .feature:nth-child(even) { flex-direction: row-reverse; }
+  .feature .txt { flex: 1 1 0; min-width: 0; }
+  .feature .pic { flex: 1.25 1 0; min-width: 0; }
+  .feature .pic img { width: 100%; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 14px 40px rgba(30,90,133,.14); display: block; }
+  .feature .num { font-size: 13px; font-weight: 700; color: var(--orange-text); letter-spacing: 2px; }
+  .feature h3 { font-size: 24px; font-weight: 900; margin: 6px 0 12px; }
+  .feature p { color: var(--text-2); font-size: 15.5px; }
+  .feature ul { margin: 14px 0 0 2px; list-style: none; }
+  .feature li { font-size: 14.5px; color: var(--text-2); padding-left: 26px; position: relative; margin-bottom: 7px; }
+  .feature li::before { content: "✓"; position: absolute; left: 0; color: var(--blue); font-weight: 900; }
+
+  /* steps */
+  .steps { background: var(--surface-2); padding: 72px 0; }
+  .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 36px; }
+  .step { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 26px; }
+  .step .n { width: 38px; height: 38px; border-radius: 999px; background: var(--blue); color: #fff; font-weight: 900; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+  .step h4 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .step p { font-size: 14px; color: var(--text-2); }
+  .steps .note { text-align: center; font-size: 13px; color: var(--text-3); margin-top: 26px; }
+
+  /* contact */
+  .contact { padding: 84px 0; text-align: center; }
+  .contact-card { max-width: 560px; margin: 32px auto 0; background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 38px 30px; box-shadow: 0 10px 34px rgba(30,90,133,.08); }
+  .qr { width: 168px; height: 168px; margin: 0 auto 18px; border: 2px dashed var(--border); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--text-3); font-size: 13px; background: var(--surface-2); overflow: hidden; }
+  .qr img { width: 100%; height: 100%; object-fit: contain; }
+  .contact .mail { font-size: 17px; font-weight: 700; }
+  .contact .or { color: var(--text-3); font-size: 13px; margin: 16px 0; }
+
+  footer { border-top: 1px solid var(--border); padding: 26px 0; font-size: 13px; color: var(--text-3); }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+  @media (max-width: 760px) {
+    .feature, .feature:nth-child(even) { flex-direction: column; gap: 22px; padding: 32px 0; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .nav-links .hide-m { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo">PMIS<span>.ai</span></div>
+    <nav class="nav-links">
+      <a href="#features" class="hide-m">功能</a>
+      <a href="#contact" class="hide-m">聯絡我們</a>
+      <a href="https://ryanxxhuang.github.io/PMIS/" class="hide-m">登入系統</a>
+      <a class="btn btn-primary btn-sm" href="https://ryanxxhuang.github.io/PMIS/demo/">線上體驗</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="tag">台灣公共工程 · 施工廠商專用</div>
+    <h1>匯入標單,<br><em>工地管理自動就位</em></h1>
+    <p class="sub">PCCES 預算書直接匯入,3,000 筆工項自動成樹。施工日誌拍白板 AI 自動填,
+    估驗計價一鍵算好保留款,契約期限與罰則系統自動盯——現場填一次,報表全到位。</p>
+    <div class="ctas">
+      <a class="btn btn-primary" href="https://ryanxxhuang.github.io/PMIS/demo/">線上體驗 Demo</a>
+      <a class="btn btn-secondary" href="#contact">申請試用</a>
+    </div>
+    <div class="hint">免安裝 · 手機平板可用 · Demo 免註冊直接看</div>
+  </div>
+  <div class="hero-shot">
+    <img src="assets/dashboard.jpg" alt="PMIS.ai 專案儀表板 — 發包工程費、完成度、進度狀態、缺失一目瞭然" loading="eager">
+  </div>
+</section>
+
+<section class="features wrap" id="features">
+  <div class="sec-head">
+    <div class="kicker">CORE FEATURES</div>
+    <h2>三件事,把工地的數字管起來</h2>
+  </div>
+
+  <div class="feature">
+    <div class="txt">
+      <div class="num">01 · 標單就是脊椎</div>
+      <h3>PCCES 標單直接匯入,數字不再重打</h3>
+      <p>把機關發的 eTender 預算書 XML 拖進來,幾千筆工項自動長成階層樹。
+      之後的日誌、估驗、進度、成本全部掛在同一套工項上——數量永遠對得起來。</p>
+      <ul>
+        <li>發包/非發包自動判別,金額權重自動計算</li>
+        <li>變更設計(追加減帳)核准後,估驗與進度分母自動改用變更後契約金額</li>
+        <li>AI 解析契約,自動列出時程義務與罰則,到期前主動提醒</li>
+      </ul>
+    </div>
+    <div class="pic"><img src="assets/valuation.jpg" alt="估驗計價 — 自動計算本期金額、保留款、變更後契約金額" loading="lazy"></div>
+  </div>
+
+  <div class="feature">
+    <div class="txt">
+      <div class="num">02 · 拍白板,日誌自動填</div>
+      <h3>現場拍一張白板,AI 幫你寫日誌</h3>
+      <p>工地白板寫好工項和數量、跟現場一起拍,AI 自動辨識並對回標單工項,
+      當日完成數量直接入帳。工程師少打字,資料反而更完整。</p>
+      <ul>
+        <li>一天一筆,附現場照片,手機瀏覽器直接用</li>
+        <li>日誌數量自動累計,月底估驗「一鍵帶入」</li>
+        <li>施工月報自動彙整當月進度、品質、工安</li>
+      </ul>
+    </div>
+    <div class="pic"><img src="assets/sitelog.jpg" alt="施工日誌 — 拍白板自動填寫當日工項與數量" loading="lazy"></div>
+  </div>
+
+  <div class="feature">
+    <div class="txt">
+      <div class="num">03 · 估驗到請款,錢的事不漏接</div>
+      <h3>估驗計價自動算,S 曲線即時看</h3>
+      <p>本期金額、累計完成度、保留款、應付金額自動計算,估驗單直接列印/存 PDF。
+      S 曲線比對預定與實際進度,落後工項自動排序,請款收款進度一頁掌握。</p>
+      <ul>
+        <li>估驗流程:草稿 → 送審 → 監造審核 → 已核定 → 已請款</li>
+        <li>成本毛利即時對照,分包發包一併管理</li>
+        <li>逾期未請款、已請款未收款,提醒中心自動盯</li>
+      </ul>
+    </div>
+    <div class="pic"><img src="assets/progress.jpg" alt="進度 S 曲線 — 預定 vs 實際,落後工項自動排序" loading="lazy"></div>
+  </div>
+</section>
+
+<section class="steps">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">GET STARTED</div>
+      <h2>三步驟開始用</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step"><div class="n">1</div><h4>註冊帳號</h4><p>Email 註冊即可,不用信用卡、不用安裝。每家公司的資料完全隔離。</p></div>
+      <div class="step"><div class="n">2</div><h4>匯入標單</h4><p>把 PCCES 預算書 XML 拖進「標單工項」,幾秒鐘長出整棵工項樹。</p></div>
+      <div class="step"><div class="n">3</div><h4>開始記日誌</h4><p>每天拍一張白板,月底估驗自動算好——就這樣。</p></div>
+    </div>
+    <p class="note">資料存於企業級雲端資料庫(Postgres + Row Level Security),僅專案成員可存取。</p>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">CONTACT</div>
+      <h2>申請試用</h2>
+      <p style="color:var(--text-2); margin-top:8px;">目前開放少量廠商免費試用,我們會親自協助你把標單匯入、跑完第一次估驗。</p>
+    </div>
+    <div class="contact-card">
+      <div class="qr">
+        <img src="assets/line-qr.png" alt="加 LINE 聊聊" onerror="this.parentNode.textContent='LINE QR(即將更新)'">
+      </div>
+      <div style="font-size:14px; color:var(--text-2); margin-bottom:18px;">掃描加 LINE,直接聊你的案子</div>
+      <div class="mail">✉ <a href="mailto:ryanxhuang1212@gmail.com">ryanxhuang1212@gmail.com</a></div>
+      <div class="or">— 或者先自己看看 —</div>
+      <a class="btn btn-secondary btn-sm" href="https://ryanxxhuang.github.io/PMIS/demo/">開啟線上 Demo(免註冊)</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 PMIS.ai — AI 工程現場管理平台</div>
+    <div><a href="https://ryanxxhuang.github.io/PMIS/">系統登入</a> · <a href="https://ryanxxhuang.github.io/PMIS/demo/">線上 Demo</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
